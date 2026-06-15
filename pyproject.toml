@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "symbolicq"
+version = "0.1.0"
+description = "Python client for the Symbolic Q cloud simulator REST API"
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+authors = [{ name = "Symbolic Q" }]
+keywords = ["quantum", "simulator", "quantum-computing", "symbolic-q"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+dependencies = [
+    "requests>=2.20",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "responses>=0.23", "build", "twine"]
+
+[project.urls]
+Homepage = "https://q.symbolicinfo.com"
+Documentation = "https://q.symbolicinfo.com"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+symbolicq = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
