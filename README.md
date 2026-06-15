@@ -219,4 +219,4 @@ python examples/csv_and_zip.py
 
 ## License
 
-MIT
+MIT License
