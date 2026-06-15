@@ -11,6 +11,10 @@ HTTP API documented in [`API.md`](API.md).
 - JSON, CSV, and ZIP request/response helpers for the documented API formats
 - Runtime dependency: `requests`
 
+An API key is required for normal use. Create one at `https://q.symbolicinfo.com`
+and provide it with `api_key=...` or the `SYMBOLICQ_API_KEY` / `API_KEY`
+environment variable.
+
 ## Install
 
 ```bash
@@ -28,7 +32,7 @@ pip install -e .[dev]
 ```python
 from symbolicq import QuantumCircuit, SymbolicQBackend
 
-backend = SymbolicQBackend()           # defaults to https://q.symbolicinfo.com
+backend = SymbolicQBackend(api_key="your-api-key")
 
 qc = QuantumCircuit(2, 2, name="bell")
 qc.h(0)
@@ -61,27 +65,30 @@ index `0` is the least-significant bit. See API.md "Bit Order".
 
 ## Configuration
 
+Get an API key from `https://q.symbolicinfo.com` before running jobs.
+
 `base_url` and `api_key` are resolved in this order, first non-empty value wins:
 
 1. Explicit argument
 2. `SYMBOLICQ_API_URL` / `SYMBOLICQ_API_KEY` from environment variables
 3. `API_URL` / `API_KEY` from environment variables
-4. Built-in default URL (`https://q.symbolicinfo.com`); no default key
+4. Built-in default URL (`https://q.symbolicinfo.com`) for `base_url`
 
-When set, the key is sent on every request as `Authorization: Bearer {API_KEY}`.
+The API key is required and is sent on every request as
+`Authorization: Bearer {API_KEY}`.
 
 ### Environment Variables
 
 ```bash
 export API_URL=https://q.symbolicinfo.com
-export API_KEY=your-secret-token
+export API_KEY=your-api-key
 ```
 
 PowerShell:
 
 ```powershell
 $env:API_URL = "https://q.symbolicinfo.com"
-$env:API_KEY = "your-secret-token"
+$env:API_KEY = "your-api-key"
 ```
 
 ```python
@@ -93,7 +100,7 @@ backend = SymbolicQBackend()   # picks up API_URL / API_KEY from env
 ```python
 backend = SymbolicQBackend(
     base_url="https://q.symbolicinfo.com",
-    api_key="...",
+    api_key="your-api-key",
     timeout=60.0,
 )
 ```
