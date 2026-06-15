@@ -4,12 +4,12 @@
 
 ## Documentation Map
 
-- [Installation and configuration](configuration.md): install, environment variables, API key, base URL resolution
-- [Circuit construction](circuits.md): `QuantumCircuit`, gate methods, serialization, validation rules
-- [Jobs and results](jobs-and-results.md): `SymbolicQBackend`, `Job`, `Result`, polling, cancellation
-- [CSV and ZIP formats](formats.md): API.md CSV/ZIP request and response helpers
-- [Low-level client API](client-reference.md): endpoint-level `SymbolicQClient` methods
-- [Troubleshooting](troubleshooting.md): common errors and checks
+- [Installation and configuration](configuration.en.md): install, environment variables, API key, base URL resolution
+- [Circuit construction](circuits.en.md): `QuantumCircuit`, gate methods, serialization, validation rules
+- [Jobs and results](jobs-and-results.en.md): `SymbolicQBackend`, `Job`, `Result`, polling, cancellation
+- [CSV and ZIP formats](formats.en.md): API.md CSV/ZIP request and response helpers
+- [Low-level client API](client-reference.en.md): endpoint-level `SymbolicQClient` methods
+- [Troubleshooting](troubleshooting.en.md): common errors and checks
 
 ## Minimal Example
 
