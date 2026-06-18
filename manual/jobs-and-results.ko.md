@@ -17,6 +17,12 @@ qc.measure_all()
 job = backend.run(qc, shots=1024, seed=7)
 ```
 
+큰 회로를 보낼 때는 `verbose=True`를 넘기면 `run()`이 JSON 회로 요청을 전송하는 동안 업로드 진행률을 stderr에 출력합니다.
+
+```python
+job = backend.run(qc, shots=1024, seed=7, verbose=True)
+```
+
 `run()`은 내부에서 다음 순서로 API를 호출합니다.
 
 1. `POST /circuits`

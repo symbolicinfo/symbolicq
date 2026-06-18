@@ -17,6 +17,12 @@ qc.measure_all()
 job = backend.run(qc, shots=1024, seed=7)
 ```
 
+For large circuits, pass `verbose=True` to print JSON circuit upload progress while `run()` sends the request.
+
+```python
+job = backend.run(qc, shots=1024, seed=7, verbose=True)
+```
+
 Internally, `run()` calls the API in this order.
 
 1. `POST /circuits`

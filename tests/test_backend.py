@@ -2,7 +2,7 @@ import pytest
 import responses
 
 from symbolicq import QuantumCircuit, SymbolicQBackend
-from symbolicq.client import DEFAULT_BASE_URL
+from symbolicq.client import DEFAULT_BASE_URL, _UploadProgressIO
 from symbolicq.exceptions import APIError, JobNotCompleteError
 
 BASE = DEFAULT_BASE_URL
@@ -79,6 +79,40 @@ def test_run_sends_shots_and_seed():
     assert body["shots"] == 2048
     assert body["seed"] == 42
     assert body["simulator_options"] == {"measurement_uses_density": True}
+
+
+def test_upload_progress_stream_reports_progress(capsys):
+    stream = _UploadProgressIO(b"abcdef", label="upload test")
+
+    assert stream.read(3) == b"abc"
+    assert stream.read() == b"def"
+
+    captured = capsys.readouterr()
+    assert "upload test:  50% (3/6 bytes)" in captured.err
+    assert "upload test: 100% (6/6 bytes)" in captured.err
+
+
+@responses.activate
+def test_run_verbose_uploads_json_then_starts_run():
+    responses.add(
+        responses.POST,
+        f"{BASE}/circuits",
+        json={"circuit_id": "cid", "circuit": {}},
+        status=201,
+    )
+    responses.add(
+        responses.POST,
+        f"{BASE}/circuits/cid/runs",
+        json={"job_id": "jid", "status": "queued"},
+        status=202,
+    )
+
+    backend = SymbolicQBackend()
+    job = backend.run(_bell(), shots=256, verbose=True)
+
+    assert job.job_id == "jid"
+    assert responses.calls[0].request.headers["Content-Type"] == "application/json"
+    assert responses.calls[1].request.url == f"{BASE}/circuits/cid/runs"
 
 
 @responses.activate

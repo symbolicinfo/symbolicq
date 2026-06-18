@@ -6,7 +6,10 @@ This maps one method per endpoint in API.md. Higher-level wrappers
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+import io
+import json
+import sys
+from typing import Any, Dict, List, Optional, TextIO
 
 import requests
 
@@ -17,6 +20,41 @@ from .formats import make_circuit_csv_zip, make_circuit_json_zip
 # Kept for backwards compatibility; the effective default is resolved from the
 # environment at construction time via :func:`resolve_base_url`.
 DEFAULT_BASE_URL = FALLBACK_BASE_URL
+
+
+class _UploadProgressIO(io.BytesIO):
+    """BytesIO wrapper that reports upload progress as requests reads it."""
+
+    def __init__(
+        self,
+        data: bytes,
+        label: str = "upload",
+        stream: Optional[TextIO] = None,
+    ) -> None:
+        super().__init__(data)
+        self._total = len(data)
+        self._label = label
+        self._stream = stream or sys.stderr
+        self._last_percent = -1
+
+    def read(self, size: int = -1) -> bytes:
+        chunk = super().read(size)
+        self._report()
+        return chunk
+
+    def _report(self) -> None:
+        sent = self.tell()
+        percent = 100 if self._total == 0 else int(sent * 100 / self._total)
+        if percent == self._last_percent and percent != 100:
+            return
+        self._last_percent = percent
+        print(
+            f"\r{self._label}: {percent:3d}% "
+            f"({sent}/{self._total} bytes)",
+            end="\n" if percent >= 100 else "",
+            file=self._stream,
+            flush=True,
+        )
 
 
 class SymbolicQClient:
@@ -120,9 +158,19 @@ class SymbolicQClient:
         return self._parse(self._request("GET", "/health"))
 
     # -- circuits ------------------------------------------------------------
-    def create_circuit(self, circuit_body: Dict[str, Any]) -> Dict[str, Any]:
+    def create_circuit(
+        self, circuit_body: Dict[str, Any], verbose: bool = False
+    ) -> Dict[str, Any]:
         """POST /circuits (JSON). Returns ``{"circuit_id", "circuit"}``."""
-        return self._parse(self._request("POST", "/circuits", json=circuit_body))
+        if not verbose:
+            return self._parse(self._request("POST", "/circuits", json=circuit_body))
+
+        data = json.dumps(circuit_body).encode("utf-8")
+        headers = {"Content-Type": "application/json"}
+        stream = _UploadProgressIO(data, label="symbolicq upload circuit")
+        return self._parse(
+            self._request("POST", "/circuits", data=stream, headers=headers)
+        )
 
     def create_circuit_csv(self, csv_text: str) -> Dict[str, Any]:
         """POST /circuits with a ``text/csv`` body."""

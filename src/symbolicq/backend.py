@@ -51,10 +51,10 @@ class SymbolicQBackend:
         """Backend availability, derived from the /health endpoint."""
         return self._client.health()
 
-    def upload_circuit(self, circuit: CircuitLike) -> str:
+    def upload_circuit(self, circuit: CircuitLike, verbose: bool = False) -> str:
         """Upload a JSON circuit body and return its server circuit id."""
         body = circuit.to_dict() if isinstance(circuit, QuantumCircuit) else circuit
-        return self._client.create_circuit(body)["circuit_id"]
+        return self._client.create_circuit(body, verbose=verbose)["circuit_id"]
 
     def upload_circuit_csv(self, csv_text: str) -> str:
         """Upload a CSV circuit body and return its server circuit id."""
@@ -75,6 +75,7 @@ class SymbolicQBackend:
         seed: Optional[int] = None,
         seed_simulator: Optional[int] = None,
         simulator_options: Optional[Dict[str, Any]] = None,
+        verbose: bool = False,
     ) -> Job:
         """Upload ``circuit`` and start a run, returning a :class:`Job`.
 
@@ -85,8 +86,9 @@ class SymbolicQBackend:
             seed_simulator: simulator seed.
             simulator_options: e.g.
                 ``{"measurement_uses_density": True, "settle_after_instruction": True}``.
+            verbose: if true, print JSON circuit upload progress to stderr.
         """
-        circuit_id = self.upload_circuit(circuit)
+        circuit_id = self.upload_circuit(circuit, verbose=verbose)
 
         run = self._client.create_run(
             circuit_id,

@@ -47,6 +47,12 @@ print(result.get_probabilities())      # {'00': 0.5, '11': 0.5}
 print(result.most_frequent())          # '11'
 ```
 
+For large circuits, enable upload progress while `run()` sends the JSON circuit:
+
+```python
+job = backend.run(qc, shots=1024, verbose=True)
+```
+
 ## Manual
 
 Start with [manual/index.md](manual/index.md) for the full documentation.
@@ -186,6 +192,7 @@ backend.run(
     qc,
     shots=1024,
     seed=7,
+    verbose=True,
     simulator_options={
         "measurement_uses_density": True,
         "settle_after_instruction": True,
