@@ -43,7 +43,7 @@ from .gates import SUPPORTED_GATES, GateSpec, get_spec
 from .job import Job
 from .result import Result
 
-__version__ = "0.1.0"
+__version__ = "0.1.2"
 
 __all__ = [
     "__version__",
